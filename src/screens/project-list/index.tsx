@@ -3,6 +3,7 @@ import { SearchPanel } from "./search-panel";
 import { List } from "./list";
 import { cleanObject, useDebounce, useMount } from "../../utils";
 import * as qs from "qs"
+import { useHtpp } from "utils/http";
 
 const apiUrl = process.env.REACT_APP_API_URL
 
@@ -14,21 +15,19 @@ export const ProjectListScreen = () => {
   })
   const debouncedParam = useDebounce(param, 2000);
   const [list, setList] = useState([])
+  const client = useHtpp();
   useEffect(() => {
-    fetch(`${apiUrl}/projects?${qs.stringify(cleanObject(debouncedParam))}`).then(async response => {
-      if (response.ok) {
-        setList(await response.json())
-      }
-    })
+    client('projects', {data:cleanObject(debouncedParam)}).then(setList)
   }, [debouncedParam])
 
   // 只需要在页面渲染的时候触发一次
   useMount(() => {
-    fetch(`${apiUrl}/users`).then(async response => {
-      if (response.ok) {
-        setUsers(await response.json())
-      }
-    })
+    client('users').then(setUsers)
+    // fetch(`${apiUrl}/users`).then(async response => {
+    //   if (response.ok) {
+    //     setUsers(await response.json())
+    //   }
+    // })
   })
 
   return <div>
