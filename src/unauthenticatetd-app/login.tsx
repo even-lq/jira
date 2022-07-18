@@ -1,24 +1,31 @@
 import { useAuth } from "context/auth-context"
-import { FormEvent } from "react"
-import { Button, Form, Input  } from "antd";
+import { Form, Input } from "antd";
 import { LongButton } from "unauthenticatetd-app";
-const apiUrl = process.env.REACT_APP_API_URL
+import { useAsync } from "utils/use-async";
 
-export const LoginScreen = () => {
-  const { login, user } = useAuth()
+export const LoginScreen = ({ onError }: { onError: (error: Error) => void }) => {
+  const { login } = useAuth()
+  const { run, isLoading } = useAsync(undefined, {throwOnError: true})
 
-  const handleSubmit = (values: {username: string, password: string}) => {
-    login(values)
+  const handleSubmit = async (values: { username: string, password: string }) => {
+    // useState的set操作是异步的，
+    // 不能用useAsync里面的error是因为这里会发生同步异步代码混用，
+    // eventloop机制会导致同步代码先执行，异步代码后执行
+    try {
+      await run(login(values))
+    } catch (e) {
+      onError(e as Error);
+    }
   }
   return <Form onFinish={handleSubmit}>
-    <Form.Item name={'username'} rules={[{required: true, message: '请输入用户名'}]}>
+    <Form.Item name={'username'} rules={[{ required: true, message: '请输入用户名' }]}>
       <Input placeholder={'用户名'} type="text" id={'username'} />
     </Form.Item>
     <Form.Item name={'password'} rules={[{ required: true, message: '请输入密码' }]}>
       <Input placeholder={'密码'} type="password" id={'password'} />
     </Form.Item>
     <Form.Item>
-      <LongButton htmlType={"submit"} type={"primary"}>登录</LongButton>
+      <LongButton loading={isLoading} htmlType={"submit"} type={"primary"}>登录</LongButton>
     </Form.Item>
   </Form>
 } 
