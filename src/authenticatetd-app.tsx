@@ -7,6 +7,7 @@ import { ReactComponent as SoftwareLogo } from 'assets/software-logo.svg'
 import { Button, Dropdown, Menu } from "antd"
 import { Navigate, Route, Routes } from "react-router";
 import { BrowserRouter as Router } from "react-router-dom";
+import { resetRoute } from "utils"
 
 export const AuthenticatedApp = () => {
   return <Container>
@@ -16,6 +17,7 @@ export const AuthenticatedApp = () => {
         <Routes>
           <Route path={'/projects'} element={<ProjectListScreen />} />
           <Route path={'/projects/:projectId/*'} element={<ProjectScreen />} />
+          <Route path="*" element={<Navigate to="/projects" replace={true} />} />
         </Routes>
       </Router>
     </Main>
@@ -26,7 +28,9 @@ const PageHeader = () => {
   const { logout, user } = useAuth()
   return <Header between={true}>
     <HeaderLeft gap={true}>
-      <SoftwareLogo width={'18rem'} color={'rgb(38, 132, 255)'} />
+      <Button type={'link'} onClick={resetRoute}>
+        <SoftwareLogo width={'18rem'} color={'rgb(38, 132, 255)'} />
+      </Button>
       <h3>项目</h3>
       <h3>用户</h3>
     </HeaderLeft>
