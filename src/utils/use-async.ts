@@ -23,11 +23,14 @@ export const useAsync = <D>(initialState?: State<D>, initialConfig?: typeof defa
     ...initialState
   })
 
-  const setData = (data: D) => setState({
-    data,
-    stat: 'success',
-    error: null
-  })
+  const setData = (data: D) => {
+    console.log('setData', data)
+    return setState({
+      data,
+      stat: 'success',
+      error: null
+    })
+  }
 
   const setError = (error: Error) => setState({
     data: null,
@@ -36,11 +39,11 @@ export const useAsync = <D>(initialState?: State<D>, initialConfig?: typeof defa
   })
 
   // run用来触发异步请求
-  const run = (promise: Promise<D>) => {
+  const run = async (promise: Promise<D>) => {
     if (!promise || !promise.then) {
       throw new Error('请传入Promise类型数据');
     }
-    setState({...state, stat: 'loading'});
+    await setState({...state, stat: 'loading'});
     return promise
       .then(data => {
         setData(data);

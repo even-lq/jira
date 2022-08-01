@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const isFalsy = (value: unknown) => value === 0 ? false : !value;
 
@@ -28,6 +28,7 @@ export const useDebounce = <V>(value: V, delay?: number) => {
   // param每次变化都会执行useEffect
   // 设置一个定时器用于更新param的值，且每次都会清理上一个定时器
   useEffect(() => {
+    console.log('value', value)
     const timeout = setTimeout(() => setDebouncedValue(value), delay)
     // useEffect清除函数的特性
     // 所以下一个useEffect运行前会清除上一个useEffect，
@@ -38,3 +39,30 @@ export const useDebounce = <V>(value: V, delay?: number) => {
   }, [value, delay])
   return debouncedValue
 }
+
+export const useDocumentTitle = (title: string, keepOnUnmount: boolean = true) => {
+  const oldTitle = useRef(document.title).current;
+  // 页面加载时：oldTitle === 旧title Jira任务管理系统
+  // 加载后：oldTitle === 新title（即参数title）
+
+  useEffect(() => {
+    document.title = title;
+  }, [title])
+
+
+  // 由于hook中闭包的关系，使用useEffect hook不指定依赖，
+  // 当页面加载时，useEffect执行，那么调用的值依然是初始值
+  // 解决方式为指定依赖，让hook闭包可以追踪到变化
+  useEffect(() => {
+
+    // 页面卸载的时候调用
+    return () => {
+      if (!keepOnUnmount) {
+        // 如果不指定依赖，读到的还是旧title
+        document.title = oldTitle;
+      }
+    }
+  }, [keepOnUnmount, oldTitle])
+}
+
+// export const resetRoute = () => window.location.href = window.location.origin;
