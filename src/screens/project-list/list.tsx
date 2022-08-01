@@ -19,11 +19,18 @@ export const List = ({ users, ...props }: ListProps) => {
   return <Table rowKey={"id"} pagination={false} columns={[
     {
       title: '名称',
+<<<<<<< HEAD
       dataIndex: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
       // render(value, project) {
       //   return <Link to={String(project.id)}>{project.name}</Link>
       // }
+=======
+      sorter: (a, b) => a.name.localeCompare(b.name),
+      render(value, project) {
+        return <Link to={String(project.id)}>{project.name}</Link>
+      }
+>>>>>>> d3de0b56332b9293bdf9ac5126618c52277c338d
     },
     {
       title: '部门',
